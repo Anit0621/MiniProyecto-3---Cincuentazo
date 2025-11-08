@@ -11,6 +11,9 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-
+  // Clase Java FX que arranca la app y que cargue la primer vista del inicio
     }
 }
+
+
+//Nota: en pruebas unitarias podemos usar Decktest, playertest y gametest y poner unos dos o tres metodos a cada una c:
