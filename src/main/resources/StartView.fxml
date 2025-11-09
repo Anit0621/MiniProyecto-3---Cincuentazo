@@ -17,10 +17,10 @@
       </ImageView>
       <HBox alignment="CENTER" prefHeight="100.0" prefWidth="600.0">
          <children>
-            <Label styleClass="label-title" text="40zo" />
+            <Label styleClass="label-title" text="50zo" />
          </children>
       </HBox>
-      <Button layoutX="266.0" layoutY="194.0" mnemonicParsing="false" styleClass="menu_button" text="Button" />
+      <Button layoutX="266.0" layoutY="194.0" mnemonicParsing="false" styleClass="menu_button" text="Jugar" />
       <Button fx:id="startButton" layoutX="341.0" layoutY="191.0" mnemonicParsing="false" onAction="#HelpBtnPressed" prefHeight="36.0" prefWidth="31.0" styleClass="help_button" text="?">
          <font>
             <Font name="System Bold" size="12.0" />
