@@ -90,9 +90,6 @@ public class GameController {
     }
 
 
-
-
-
     public void initVariables() {
         this.game = new Game(numPlayers);
         this.game.initializeGame();
@@ -114,7 +111,7 @@ public class GameController {
         if (result.isPresent()) {
             try {
                 int num = Integer.parseInt(result.get());
-                if (num < 2 || num > 4){
+                if (num < 2 || num > 4) {
                     System.out.println(num);
                     Alert alert = new Alert(Alert.AlertType.WARNING);
                     alert.setTitle("Acción inválida");
@@ -211,9 +208,5 @@ public class GameController {
                 }
             }
         }
-    }
-
-    private void printCardsMachinePlayer(){
-        this.playerGridPane.getChildren().clear();
     }
 }
