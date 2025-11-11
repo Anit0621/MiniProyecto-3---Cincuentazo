@@ -21,9 +21,9 @@ public class StartStage extends Stage {
        root = loader.load();
         startController = loader.getController();
         Scene scene = new Scene(root);
-        setTitle("Welcome");
+        setTitle("Bienvenido");
 
-        getIcons().add(new Image(String.valueOf(getClass().getResource("/icons/favicon.png"))));
+        getIcons().add(new Image(String.valueOf(getClass().getResource("/images/favicon.png"))));
         setScene(scene);
         setResizable(false);
         show();

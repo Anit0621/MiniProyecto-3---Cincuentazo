@@ -4,7 +4,8 @@ import com.example._50zo.model.exceptions.EmptyDeck;
 import com.example._50zo.model.exceptions.NonPlayableCard;
 import java.util.ArrayList;
 import java.util.List;
-
+import com.example._50zo.model.MachinePlayer;
+import com.example._50zo.model.HumanPlayer;
 /**
  * Represents the main game logic for Cincuentazo.
  *
@@ -19,15 +20,18 @@ public class Game {
     private List<Player> players;
     private int tableSum;
     private boolean gameOver;
+    private int numPlayers;
+    private MachinePlayer machinePlayer;
 
     /**
      * Creates a new Cincuentazo game.
      */
-    public Game() {
+    public Game(int numPlayers) {
         this.deck = new Deck();
         this.players = new ArrayList<>();
         this.tableSum = 0;
         this.gameOver = false;
+        this.numPlayers = numPlayers;
     }
 
     /**
@@ -39,16 +43,18 @@ public class Game {
     public void initializeGame() {
         deck.initializeStandard52Deck();
         deck.shuffle();
+        HumanPlayer humanPlayer = new HumanPlayer("Jugador humano");
+        players.add(humanPlayer);
 
-        // Example: 1 human and 1 machine player
-        Player human = new HumanPlayer("Tú");
-        Player machine = new MachinePlayer("Máquina");
-
-        players.add(human);
-        players.add(machine);
+         for(int i = 0 ; i < numPlayers; i++){
+            MachinePlayer machineplayerr = new MachinePlayer("máquina " + i);
+            Thread machineplayer = new Thread(machineplayerr);
+             System.out.println("Máquina " + i + "creada");
+             players.add(machineplayerr);
+        }
 
         // Deal 5 cards to each player
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 4; i++) {
             for (Player p : players) {
                 try {
                     p.addCard(deck.drawCard());

@@ -170,8 +170,11 @@ public class Deck {
                         value = 0;
                     }
                 }
+
+                String folder = suit.toLowerCase();
                 // imagePath left empty and GUI can set actual images later
                 Card card = new Card(rank, suit, value, "");
+                card.setImagePath("/Cartas/" + folder + "/" + rank + ".png");
                 cards.push(card);
             }
         }

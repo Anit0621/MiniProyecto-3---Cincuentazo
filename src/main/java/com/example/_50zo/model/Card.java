@@ -9,7 +9,7 @@ package com.example._50zo.model;
  * It will be used in the Deck class inside a Stack<Card> structure.
  *
  */
-public class Card {
+public class    Card {
 
     private String name;       // A, 2, 3, ..., J, Q, K
     private String suit;       // Corazones, treboles, diamantes, picas
