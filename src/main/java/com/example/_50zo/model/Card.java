@@ -31,7 +31,6 @@ public class    Card {
         this.imagePath = imagePath;
     }
 
-    // ------------------ Getters and Setters ------------------
 
     public String getName() {
         return name;

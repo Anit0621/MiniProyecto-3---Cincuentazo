@@ -26,6 +26,15 @@ import java.util.ResourceBundle;
 public class GameController {
 
     @FXML
+    private GridPane machine1GridPane;
+
+    @FXML
+    private GridPane machine2GridPane;
+
+    @FXML
+    private GridPane machine3GridPane;
+
+    @FXML
     private Button deckofCards;
 
     @FXML
@@ -39,7 +48,8 @@ public class GameController {
 
     private Game game;
 
-    private Deck deck;
+
+    private boolean mustDrawCard = false;
 
     private Thread machinePlayer;
 
@@ -55,8 +65,31 @@ public class GameController {
 
     @FXML
     void handleTakeCard(ActionEvent event) {
+        try {
+            Player humanplayer = game.getPlayers().get(0);
 
+            if (!mustDrawCard) {
+                System.out.println("Primero debes jugar una carta antes de tomar del mazo.");
+                return;
+            }
+
+            if (!game.getDeck().isEmpty()) {
+                Card newCard = game.getDeck().drawCard();
+                humanplayer.addCard(newCard);
+                printCardsHumanPlayer();
+                System.out.println("Has tomado una nueva carta: " + newCard);
+
+                mustDrawCard = false;
+            } else {
+                System.out.println("El mazo está vacío. No hay más cartas para tomar.");
+            }
+
+        } catch (Exception e) {
+            System.out.println("Error al tomar una carta: " + e.getMessage());
+        }
     }
+
+
 
 
 
@@ -64,6 +97,7 @@ public class GameController {
         this.game = new Game(numPlayers);
         this.game.initializeGame();
         printCardsHumanPlayer();
+        printCardsMachinePlayers();
     }
 
     public void setNumPlayers(int numPlayers) {
@@ -108,26 +142,75 @@ public class GameController {
         return 1;
     }
 
-    private void printCardsHumanPlayer(){
-        this.playerGridPane.getChildren().clear();
-        Player humanplayer = game.getPlayers().get(0);
+    private void printCardsHumanPlayer() {
+        playerGridPane.getChildren().clear();
+
+        Player humanPlayer = game.getPlayers().get(0);
+
         int col = 0;
-        for (Card card : humanplayer.getHand()){
+        for (Card card : humanPlayer.getHand()) {
             try {
-                System.out.println("Loading image: " + card.getImagePath());
-                System.out.println(getClass().getResource(card.getImagePath()));
+                System.out.println("Cargando imagen: " + card.getImagePath());
                 Image cardImage = new Image(getClass().getResourceAsStream(card.getImagePath()));
                 ImageView imageView = new ImageView(cardImage);
                 imageView.setFitWidth(80);
                 imageView.setFitHeight(90);
                 imageView.setPreserveRatio(true);
+
                 playerGridPane.add(imageView, col++, 0);
+
+                imageView.setOnMouseClicked(e -> {
+                    try {
+                        if (mustDrawCard) {
+                            System.out.println("Debes tomar una carta del mazo antes de jugar otra.");
+                            return;
+                        }
+
+                        humanPlayer.getHand().remove(card);
+                        tableImageView.setImage(new Image(getClass().getResourceAsStream(card.getImagePath())));
+
+                        mustDrawCard = true;
+
+                        printCardsHumanPlayer();
+
+                    } catch (Exception ex) {
+                        System.out.println("Error al jugar la carta: " + ex.getMessage());
+                    }
+                });
+
             } catch (Exception e) {
                 System.out.println("No se pudo cargar la imagen de la carta " + card.getImagePath());
             }
         }
+    }
 
+    private void printCardsMachinePlayers() {
+        if (machine1GridPane != null) machine1GridPane.getChildren().clear();
+        if (machine2GridPane != null) machine2GridPane.getChildren().clear();
+        if (machine3GridPane != null) machine3GridPane.getChildren().clear();
 
+        Image backImage = new Image(getClass().getResourceAsStream("/images/back.png"));
+
+        int numMachines = numPlayers - 1;
+
+        for (int i = 1; i <= numMachines; i++) {
+            Player machine = game.getPlayers().get(i);
+
+            for (int j = 0; j < machine.getHand().size(); j++) {
+                ImageView cardBack = new ImageView(backImage);
+                cardBack.setFitWidth(80);
+                cardBack.setFitHeight(90);
+                cardBack.setPreserveRatio(true);
+
+                if (i == 1 && machine1GridPane != null) {
+                    machine1GridPane.add(cardBack, 0, j);
+                } else if (i == 2 && machine2GridPane != null) {
+                    machine2GridPane.add(cardBack, j, 0);
+                } else if (i == 3 && machine3GridPane != null) {
+                    machine3GridPane.add(cardBack, 0, j);
+                }
+            }
+        }
     }
 
     private void printCardsMachinePlayer(){

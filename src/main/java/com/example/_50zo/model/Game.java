@@ -23,6 +23,10 @@ public class Game {
     private int numPlayers;
     private MachinePlayer machinePlayer;
 
+    public Deck getDeck() {
+        return deck;
+    }
+
     /**
      * Creates a new Cincuentazo game.
      */
