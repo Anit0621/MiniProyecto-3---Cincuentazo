@@ -2,7 +2,7 @@
 .menu_button {
     -fx-background-color: #FFD700;
     -fx-text-fill: black;
-    -fx-font-size: 12px;
+    -fx-font-size: 25px;
     -fx-font-weight: bold;
     -fx-background-radius: 6;
     -fx-padding: 5 10 5 10;
@@ -17,7 +17,7 @@
     -fx-start-margin: 25;
     -fx-background-color: #DC143C;
     -fx-text-fill: black;
-    -fx-font-size: 12px;
+    -fx-font-size: 30px;
     -fx-font-weight: bold;
     -fx-background-radius: 50;
     -fx-padding: 5 10 5 10;
@@ -30,17 +30,30 @@
 
 .label-title {
     -fx-font-family: "Impact";
-    -fx-font-size: 42px;
+    -fx-font-size: 95px;
     -fx-text-fill: gold;
     -fx-effect: dropshadow(gaussian, black, 5, 0.5, 2, 2);
     -fx-letter-spacing: 2px;
 }
 
 .information-label {
-    -fx-background-color: #ffcc80;
+    -fx-background-color: #3FD942;;
     -fx-text-fill: #bf360c;
+    -fx-font: 15px "Verdana Bold";
     -fx-font-weight: bold;
-    -fx-font-size: 15px;
+    -fx-padding: 8 12;
+    -fx-background-radius: 8;
+    -fx-border-color: #ff6f00;
+    -fx-border-width: 1.5;
+    -fx-border-radius: 8;
+    -fx-effect: dropshadow(one-pass-box, rgba(0, 0, 0, 0.2), 6, 0, 2, 2);
+}
+
+.warning-label {
+    -fx-background-color: #3FD942;
+    -fx-text-fill: black;
+    -fx-font-weight: bold;
+    -fx-font-size: 25px;
     -fx-padding: 8 12;
     -fx-background-radius: 8;
     -fx-border-color: #ff6f00;
