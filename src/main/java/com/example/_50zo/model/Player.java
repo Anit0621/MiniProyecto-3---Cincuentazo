@@ -56,7 +56,7 @@ public abstract class Player {
     public boolean canPlay(int tableSum) {
         for (Card c : hand) {
             int value = c.getGameValue(tableSum);
-            if (tableSum + value <= 50) {
+            if (tableSum + value <= 20) {
                 return true;
             }
         }

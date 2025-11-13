@@ -35,7 +35,7 @@ public class StartController {
     @FXML
     void startGame(ActionEvent event) throws IOException {
 
-        if(nameField.getText().isEmpty()) {
+        if (nameField.getText().isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Acción inválida");
             alert.setHeaderText("¡No ingresaste nombre!");
@@ -45,15 +45,15 @@ public class StartController {
             dialogpane.getStylesheets().add(getClass().getResource("/styles.css").toExternalForm());
             dialogpane.getStyleClass().add("warning-label");
             alert.showAndWait();
+        } else {
+            String playerName = nameField.getText();
+
+            game = new Game(numPlayers);
+            game.setHumanName(playerName);
+
+            GameStage gameStage = GameStage.getInstance();
+            gameStage.show();
         }
-
-        else{
-            GameStage.getInstance();
-
-        }
-
-
-
     }
 
     @FXML

@@ -1,6 +1,8 @@
 package com.example._50zo.controller;
 
 import com.example._50zo.model.*;
+import com.example._50zo.view.EndStage;
+import com.example._50zo.view.GameStage;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -18,6 +20,9 @@ import java.util.*;
 
 
 public class GameController {
+
+    @FXML
+    private TextArea gameMessages;
 
     @FXML
     private GridPane machine1GridPane;
@@ -59,6 +64,7 @@ public class GameController {
         setNumPlayers(askNumberOfPlayers());
         initVariables();
         StartStage.deleteInstance();
+        gameMessages.setStyle("-fx-text-alignment: center; -fx-alignment: center;");
     }
 
     public void initVariables() {
@@ -82,7 +88,7 @@ public class GameController {
             Player humanplayer = game.getPlayers().get(0);
 
             if (!mustDrawCard) {
-                System.out.println("Primero debes jugar una carta antes de tomar del mazo.");
+                showMessage("Primero debes jugar una carta antes de tomar del mazo.");
                 return;
             }
 
@@ -90,15 +96,15 @@ public class GameController {
                 Card newCard = game.getDeck().drawCard();
                 humanplayer.addCard(newCard);
                 printCardsHumanPlayer();
-                System.out.println("Has tomado una nueva carta: " + newCard);
+                showMessage("Has tomado una nueva carta: " + newCard);
 
                 mustDrawCard = false;
             } else {
-                System.out.println("El mazo está vacío. No hay más cartas para tomar.");
+                showMessage("El mazo está vacío. No hay más cartas para tomar.");
             }
 
         } catch (Exception e) {
-            System.out.println("Error al tomar una carta: " + e.getMessage());
+            showMessage("Error al tomar una carta: " + e.getMessage());
         }
     }
 
@@ -155,7 +161,7 @@ public class GameController {
         int col = 0;
         for (Card card : humanPlayer.getHand()) {
             try {
-                System.out.println("Cargando imagen: " + card.getImagePath());
+                showMessage("Cargando imagen: " + card.getImagePath());
                 Image cardImage = new Image(getClass().getResourceAsStream(card.getImagePath()));
                 ImageView imageView = new ImageView(cardImage);
                 imageView.setFitWidth(80);
@@ -165,22 +171,33 @@ public class GameController {
                 playerGridPane.add(imageView, col++, 0);
 
                 imageView.setOnMouseClicked(e -> {
-                        if (mustDrawCard) {
-                            System.out.println("Debes tomar una carta del mazo antes de jugar otra.");
-                        }
-                        else {
+                    if (mustDrawCard) {
+                        showMessage("Debes tomar una carta del mazo antes de jugar otra.");
+                    } else {
+                        humanPlayer.removeCard(card);
+                        updateTableSumAndView(card);
+                        printCardsHumanPlayer();
 
-                            humanPlayer.removeCard(card);
-                            updateTableSumandView(card);
-                            printCardsHumanPlayer();
+                        mustDrawCard = true;
 
-                            mustDrawCard = true;
+                        if (!humanPlayer.canPlay(game.getTableSum())) {
+                            System.out.println("Esta entrando aqui? suma de la mesa: " + game.getTableSum());
+                            showMessage("No puedes jugar más cartas. Has sido eliminado.");
+                            game.eliminatePlayer(humanPlayer);
+
+                            if (!game.isGameOver()) {
+                                new Thread(() -> continueMachinesAfterHumanLost()).start();
+                            }
+                        } else {
                             new Thread(() -> playMachinesTurn()).start();
+                            System.out.println();
                         }
+                    }
                 });
 
+
             } catch (Exception e) {
-                System.out.println("No se pudo cargar la imagen de la carta " + card.getImagePath());
+                showMessage("No se pudo cargar la imagen de la carta " + card.getImagePath());
             }
         }
     }
@@ -214,18 +231,17 @@ public class GameController {
         }
     }
 
-    public void updateTableSumandView(Card card){
+    public void updateTableSumAndView(Card card) {
         Platform.runLater(() -> {
-        int currentSum = Integer.parseInt(tableSum.getText());
-        System.out.println("Suma antes de la jugada: " + currentSum);
-        int valueToSum = card.getGameValue( currentSum);
-        System.out.println("Valor a sumar: "+ valueToSum);
-        currentSum += valueToSum;
-        game.setTableSum(currentSum);
-        System.out.println("Valor despues de la jugada " + currentSum);
-        tableSum.setText(String.valueOf(currentSum));
-        System.out.println("nueva suma en la mesa " + currentSum);
-        tableImageView.setImage(new Image(getClass().getResourceAsStream(card.getImagePath())));
+            int currentSum = Integer.parseInt(tableSum.getText());
+            int valueToSum = card.getGameValue(currentSum);
+            currentSum += valueToSum;
+            game.setTableSum(currentSum);
+            tableSum.setText(String.valueOf(currentSum));
+            tableImageView.setImage(new Image(getClass().getResourceAsStream(card.getImagePath())));
+            System.out.println("Nueva suma en la mesa " + currentSum);
+            showMessage("Nueva suma en la mesa: " + currentSum);
+
 
         });
     }
@@ -235,28 +251,95 @@ public class GameController {
         Random random = new Random();
         Stack<Card> cards = deck.getCards();
         Card randomCard = cards.pop();
-        updateTableSumandView(randomCard);
+        updateTableSumAndView(randomCard);
     }
 
     private void playMachinesTurn() {
+        List<Player> currentPlayers = new ArrayList<>(game.getPlayers());
 
-        for (Player player : game.getPlayers()) {
-
-            if (player instanceof MachinePlayer) {
+        for (Player player : currentPlayers) {
+            if (player instanceof MachinePlayer && !player.isEliminated()) {
                 String name = player.getName();
 
-                if (name.equals("máquina 1") && machine1GridPane != null) {
+                if ((name.equals("maquina 1") && machine1GridPane != null)
+                        || (name.equals("maquina 2") && machine2GridPane != null)
+                        || (name.equals("maquina 3") && machine3GridPane != null)) {
+                    System.out.println("al jugar las maquinas, la suma es: " + Integer.parseInt(tableSum.getText()));
                     game.playTurn(player);
-
-                } else if (name.equals("máquina 2") && machine2GridPane != null) {
-                    game.playTurn(player);
-
-                } else if (name.equals("máquina 3") && machine3GridPane != null) {
-                    game.playTurn(player);
-
                 }
             }
         }
+
+        game.removeEliminatedPlayers();
+        System.out.println("Turno del jugador, suma de la mesa: " + Integer.parseInt(tableSum.getText()));
+    }
+
+
+    private void continueMachinesAfterHumanLost() {
+        System.out.println("El jugador humano ha sido eliminado. Las máquinas seguirán jugando...");
+        showMessage("El jugador humano ha sido eliminado. Las máquinas seguirán jugando...");
+
+        while (!game.isGameOver()) {
+            List<Player> currentPlayers = new ArrayList<>(game.getPlayers());
+
+            for (Player player : currentPlayers) {
+                if (player instanceof MachinePlayer && !player.isEliminated()) {
+                    game.playTurn(player);
+
+                    try {
+                        Thread.sleep((int)(Math.random() * 2000) + 2000);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                }
+            }
+
+            game.removeEliminatedPlayers();
+
+        }
+    }
+    /**
+     * Handles the end of the game by closing the current GameStage
+     * and showing the EndStage with the winner's information.
+     *
+     * @param winnerName the name of the winner
+     * @param playerWon true if the human player won, false if a machine won
+     */
+    public void onGameEnded(String winnerName, boolean playerWon) throws IOException{
+        Platform.runLater(() -> {
+            try {
+                EndStage.getInstance();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            try {
+                if (StartStage.getInstance() != null) {
+                    StartStage.deleteInstance();
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+                javafx.stage.Stage currentStage = (javafx.stage.Stage) tableImageView.getScene().getWindow();
+                currentStage.close();
+
+        });
+    }
+
+    /**
+     * Displays a message in the game's text area safely from any thread.
+     * Ensures UI updates happen on the JavaFX Application Thread.
+     *
+     * @param message The message to display
+     */
+    public void showMessage(String message) {
+        javafx.application.Platform.runLater(() -> {
+            gameMessages.setText(message);
+        });
     }
 
 }
