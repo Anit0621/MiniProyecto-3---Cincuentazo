@@ -6,7 +6,6 @@ package com.example._50zo.model;
  * Each card has a name (rank), a suit, a numeric value, and an optional image path.
  * This class is simple and only stores basic card data.
  *
- * It will be used in the Deck class inside a Stack<Card> structure.
  *
  */
 public class    Card {
