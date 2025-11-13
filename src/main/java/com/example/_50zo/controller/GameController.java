@@ -1,6 +1,8 @@
 package com.example._50zo.controller;
 
 import com.example._50zo.model.*;
+import com.example._50zo.view.EndStage;
+import com.example._50zo.view.GameStage;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -173,12 +175,13 @@ public class GameController {
                         showMessage("Debes tomar una carta del mazo antes de jugar otra.");
                     } else {
                         humanPlayer.removeCard(card);
-                        updateTableSumandView(card);
+                        updateTableSumAndView(card);
                         printCardsHumanPlayer();
 
                         mustDrawCard = true;
 
                         if (!humanPlayer.canPlay(game.getTableSum())) {
+                            System.out.println("Esta entrando aqui? suma de la mesa: " + game.getTableSum());
                             showMessage("No puedes jugar más cartas. Has sido eliminado.");
                             game.eliminatePlayer(humanPlayer);
 
@@ -187,6 +190,7 @@ public class GameController {
                             }
                         } else {
                             new Thread(() -> playMachinesTurn()).start();
+                            System.out.println();
                         }
                     }
                 });
@@ -227,7 +231,7 @@ public class GameController {
         }
     }
 
-    public void updateTableSumandView(Card card) {
+    public void updateTableSumAndView(Card card) {
         Platform.runLater(() -> {
             int currentSum = Integer.parseInt(tableSum.getText());
             int valueToSum = card.getGameValue(currentSum);
@@ -235,15 +239,10 @@ public class GameController {
             game.setTableSum(currentSum);
             tableSum.setText(String.valueOf(currentSum));
             tableImageView.setImage(new Image(getClass().getResourceAsStream(card.getImagePath())));
+            System.out.println("Nueva suma en la mesa " + currentSum);
             showMessage("Nueva suma en la mesa: " + currentSum);
 
-            if (currentSum > 50) {
-                Player human = game.getPlayers().get(0);
-                showMessage("Te pasaste de 50. Has sido eliminado.");
-                game.eliminatePlayer(human);
 
-                new Thread(() -> continueMachinesAfterHumanLost()).start();
-            }
         });
     }
 
@@ -252,7 +251,7 @@ public class GameController {
         Random random = new Random();
         Stack<Card> cards = deck.getCards();
         Card randomCard = cards.pop();
-        updateTableSumandView(randomCard);
+        updateTableSumAndView(randomCard);
     }
 
     private void playMachinesTurn() {
@@ -265,16 +264,19 @@ public class GameController {
                 if ((name.equals("maquina 1") && machine1GridPane != null)
                         || (name.equals("maquina 2") && machine2GridPane != null)
                         || (name.equals("maquina 3") && machine3GridPane != null)) {
+                    System.out.println("al jugar las maquinas, la suma es: " + Integer.parseInt(tableSum.getText()));
                     game.playTurn(player);
                 }
             }
         }
 
         game.removeEliminatedPlayers();
+        System.out.println("Turno del jugador, suma de la mesa: " + Integer.parseInt(tableSum.getText()));
     }
 
 
     private void continueMachinesAfterHumanLost() {
+        System.out.println("El jugador humano ha sido eliminado. Las máquinas seguirán jugando...");
         showMessage("El jugador humano ha sido eliminado. Las máquinas seguirán jugando...");
 
         while (!game.isGameOver()) {
@@ -293,6 +295,7 @@ public class GameController {
             }
 
             game.removeEliminatedPlayers();
+
         }
     }
     /**
@@ -302,21 +305,28 @@ public class GameController {
      * @param winnerName the name of the winner
      * @param playerWon true if the human player won, false if a machine won
      */
-    public void onGameEnded(String winnerName, boolean playerWon) {
+    public void onGameEnded(String winnerName, boolean playerWon) throws IOException{
         Platform.runLater(() -> {
             try {
-                com.example._50zo.view.EndStage endStage = new com.example._50zo.view.EndStage();
-                endStage.getController().setWinnerName(winnerName);
+                EndStage.getInstance();
 
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            try {
                 if (StartStage.getInstance() != null) {
                     StartStage.deleteInstance();
                 }
 
-                javafx.stage.Stage currentStage = (javafx.stage.Stage) tableImageView.getScene().getWindow();
-                currentStage.close();
-            } catch (Exception e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
+
+
+                javafx.stage.Stage currentStage = (javafx.stage.Stage) tableImageView.getScene().getWindow();
+                currentStage.close();
+
         });
     }
 

@@ -44,7 +44,7 @@ public class MachinePlayer extends Player implements Runnable {
         // Choose the first playable card (simple strategy)
         for (Card c : hand) {
             int value = c.getGameValue(tableSum);
-            if (tableSum + value <= 50) {
+            if (tableSum + value <= 20) {
                 hand.remove(c);
                 playedCard = c;
                 return c;

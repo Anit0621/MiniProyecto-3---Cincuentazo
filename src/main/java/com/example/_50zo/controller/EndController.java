@@ -1,7 +1,12 @@
 package com.example._50zo.controller;
 
+import com.example._50zo.model.Game;
+import com.example._50zo.view.StartStage;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import com.example._50zo.view.GameStage;
+
+import java.io.IOException;
 
 /**
  * Controller for the EndView scene.
@@ -16,7 +21,17 @@ public class EndController {
     private Label labelWinner;
 
     @FXML
-    private Label labelFinal;
+    private Label labelFinalVictory;
+
+    @FXML
+
+    private Label labelFinalDefeat;
+
+
+
+    public void initialize() throws IOException {
+        GameStage.deleteInstance();
+    }
 
     /**
      * Sets the winner name and updates the final message accordingly.
@@ -26,9 +41,11 @@ public class EndController {
         labelWinner.setText(winnerName);
 
         if (winnerName.toLowerCase().contains("maquina")) {
-            labelFinal.setText("Suerte para la proxima");
+            labelFinalDefeat.setText("Suerte para la proxima");
+            labelFinalVictory.setVisible(false);
         } else {
-            labelFinal.setText("¡Felicidades!");
+            labelFinalVictory.setText("¡Felicidades!");
+            labelFinalDefeat.setVisible(false);
         }
     }
 }

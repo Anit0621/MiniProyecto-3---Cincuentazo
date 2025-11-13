@@ -1,6 +1,8 @@
 package com.example._50zo.model;
 
 import com.example._50zo.model.exceptions.EmptyDeck;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import com.example._50zo.controller.GameController;
@@ -79,12 +81,17 @@ public class Game {
     public void playTurn(Player player) {
         if (gameOver || player == null || player.isEliminated()) return;
 
-        System.out.println("Turno de: " + player.getName() + " | Suma actual: " + tableSum);
+        System.out.println("Turno de: " + player.getName() + " | Suma actual: " + getTableSum());
 
         if (player instanceof MachinePlayer) {
             MachinePlayer machine = (MachinePlayer) player;
 
             if (!machine.canPlay(tableSum)) {
+                System.out.println("Entra al ciclo de eliminar, la suma actual de la mesa es: " + tableSum);
+                for ( Card c : machine.getHand()){
+                    System.out.println("las cartas restantes son");
+                    System.out.println(c.getGameValue(tableSum));
+                }
                 eliminatePlayer(machine);
                 return;
             }
@@ -106,14 +113,6 @@ public class Game {
                 }
             }
 
-            if (tableSum > 50 && !player.isEliminated()) {
-                eliminatePlayer(player);
-            }
-
-        } else {
-            if (tableSum > 50 && !player.isEliminated()) {
-                eliminatePlayer(player);
-            }
         }
 
         checkForWinner();
@@ -133,7 +132,9 @@ public class Game {
                 ((MachinePlayer) p).stopRunning();
             } catch (Exception ignored) {}
         }
-
+        System.out.println("Numero de jugadores antes de eliminar al jugador actual " + numPlayers);
+        numPlayers = numPlayers-1;
+        System.out.println("Numero de jugadores despues de eliminar al jugador actal " +numPlayers);
         p.eliminate();
 
         if (gameController != null) {
@@ -144,32 +145,45 @@ public class Game {
     }
 
     public void removeEliminatedPlayers() {
-        players.removeIf(Player::isEliminated);
+        var currentNumPlayers = numPlayers;
+        currentNumPlayers -= currentNumPlayers;
     }
 
 
     public void checkForWinner() {
+        System.out.println("Al revisar el numero de jugadores para determinar ganador, hay " + numPlayers);
         if (gameOver) return;
-
-        List<Player> activePlayers = new ArrayList<>();
+        int counterForLeftPlayers = 0;
+        Player lastStanding = null;
         for (Player p : players) {
             if (!p.isEliminated()) {
-                activePlayers.add(p);
+                counterForLeftPlayers++;
+                lastStanding = p;
+
+
             }
         }
 
-        if (activePlayers.size() == 1) {
-            Player winner = activePlayers.get(0);
+        if (lastStanding != null){
+        if (counterForLeftPlayers == 1) {
+            Player winner = lastStanding;
             gameOver = true;
 
-            String winnerName = winner.getName();
+            String winnerName = lastStanding.getName();
             boolean playerWon = winner instanceof HumanPlayer;
+            try {
+                if (gameController != null) {
+                    System.out.println("OngameEnded sera llamado");
+                    gameController.showMessage("El ganador es: " + winnerName);
+                    gameController.onGameEnded(winnerName, playerWon);
+                }
 
-            if (gameController != null) {
-                gameController.showMessage("El ganador es: " + winnerName);
-                gameController.onGameEnded(winnerName, playerWon);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } else if (activePlayers.isEmpty()) {
+        }
+
+        } else if (counterForLeftPlayers == 0) {
             gameOver = true;
             if (gameController != null) {
                 gameController.showMessage("Todos los jugadores han sido eliminados. No hay ganador.");
@@ -209,7 +223,7 @@ public class Game {
         if (gameController != null) {
             int value = card.getGameValue(tableSum);
             tableSum += value;
-            gameController.updateTableSumandView(card);
+            gameController.updateTableSumAndView(card);
         }
     }
 

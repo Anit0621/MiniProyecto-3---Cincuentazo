@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="391.0" prefWidth="574.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example._50zo.controller.EndController">
+<AnchorPane prefHeight="391.0" prefWidth="574.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example._50zo.controller.EndController">
    <children>
       <ImageView fitHeight="400.0" fitWidth="647.0" layoutX="-21.0" layoutY="-4.0" pickOnBounds="true" preserveRatio="true">
          <image>
@@ -23,13 +23,13 @@
       <Button layoutX="-325.0" layoutY="-122.0" mnemonicParsing="false" text="Button" />
       <Label layoutX="174.0" layoutY="171.0" prefHeight="72.0" prefWidth="213.0" text="GANADOR:" textFill="#ffe800">
          <font>
-            <Font name="Algerian" size="43.0" />
+            <Font size="38.0" />
          </font>
          <effect>
             <DropShadow spread="0.46" />
          </effect>
       </Label>
-      <Label fx:id="labelWinner" alignment="CENTER" contentDisplay="CENTER" layoutX="61.0" layoutY="215.0" prefHeight="72.0" prefWidth="438.0" text="xdxd" textFill="#ffe800">
+      <Label fx:id="labelWinner" alignment="CENTER" contentDisplay="CENTER" layoutX="61.0" layoutY="215.0" prefHeight="72.0" prefWidth="438.0" textFill="#ffe800">
          <font>
             <Font name="Algerian" size="35.0" />
          </font>
@@ -37,7 +37,15 @@
             <DropShadow spread="0.46" />
          </effect>
       </Label>
-      <Label fx:id="labelFinal" layoutX="79.0" layoutY="287.0" prefHeight="72.0" prefWidth="425.0" text="SUERTE PARA LA PROXIMA" textFill="#fc1e1e">
+      <Label fx:id="labelFinalVictory" layoutX="160.0" layoutY="287.0" prefHeight="72.0" prefWidth="306.0" textFill="#fc1e1e">
+         <font>
+            <Font name="Algerian" size="33.0" />
+         </font>
+         <effect>
+            <DropShadow spread="0.63" />
+         </effect>
+      </Label>
+      <Label fx:id="labelFinalDefeat" layoutX="61.0" layoutY="287.0" prefHeight="72.0" prefWidth="425.0" textFill="#fc1e1e">
          <font>
             <Font name="Algerian" size="33.0" />
          </font>
