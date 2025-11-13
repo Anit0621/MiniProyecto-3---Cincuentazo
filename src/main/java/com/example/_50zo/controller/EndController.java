@@ -1,7 +1,5 @@
 package com.example._50zo.controller;
 
-import com.example._50zo.model.Game;
-import com.example._50zo.view.StartStage;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import com.example._50zo.view.GameStage;

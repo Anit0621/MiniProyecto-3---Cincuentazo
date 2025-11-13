@@ -34,9 +34,6 @@ public class GameController {
     private GridPane machine3GridPane;
 
     @FXML
-    private ImageView deckofCards;
-
-    @FXML
     private GridPane playerGridPane;
 
     @FXML
@@ -308,7 +305,10 @@ public class GameController {
     public void onGameEnded(String winnerName, boolean playerWon) throws IOException{
         Platform.runLater(() -> {
             try {
-                EndStage.getInstance();
+                EndStage endStage = EndStage.getInstance();
+                EndController endController = endStage.getController();
+
+                endController.setWinnerName(winnerName);
 
             } catch (Exception e) {
                 e.printStackTrace();
