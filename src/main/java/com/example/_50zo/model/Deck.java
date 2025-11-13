@@ -179,4 +179,8 @@ public class Deck {
             }
         }
     }
+
+    public Stack<Card> getCards() {
+        return cards;
+    }
 }

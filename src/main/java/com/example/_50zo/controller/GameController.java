@@ -1,26 +1,20 @@
 package com.example._50zo.controller;
 
 import com.example._50zo.model.*;
-import com.example._50zo.view.GameStage;
-import javafx.event.ActionEvent;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.DialogPane;
-import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import com.example._50zo.view.StartStage;
 
 
 
 import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.io.InputStream;
+import java.util.*;
 
 
 public class GameController {
@@ -35,7 +29,7 @@ public class GameController {
     private GridPane machine3GridPane;
 
     @FXML
-    private Button deckofCards;
+    private ImageView deckofCards;
 
     @FXML
     private GridPane playerGridPane;
@@ -44,9 +38,16 @@ public class GameController {
 
     private ImageView tableImageView;
 
+    @FXML
+    private Label tableSum;
+
     private int numPlayers;
 
     private Game game;
+
+    private Deck deck;
+
+    private Random random;
 
 
     private boolean mustDrawCard = false;
@@ -58,13 +59,25 @@ public class GameController {
         setNumPlayers(askNumberOfPlayers());
         initVariables();
         StartStage.deleteInstance();
+    }
+
+    public void initVariables() {
+        this.game = new Game(numPlayers);
+        game.setController(this);
+        int intTableSum = Integer.parseInt(tableSum.getText());
+        intTableSum = game.getTableSum();
+        this.game.initializeGame();
+        printCardsHumanPlayer();
+        printCardsMachinePlayers();
+        playFirstCard();
+
 
 
     }
 
 
     @FXML
-    void handleTakeCard(ActionEvent event) {
+    void handleTakeCard(MouseEvent event) {
         try {
             Player humanplayer = game.getPlayers().get(0);
 
@@ -90,12 +103,7 @@ public class GameController {
     }
 
 
-    public void initVariables() {
-        this.game = new Game(numPlayers);
-        this.game.initializeGame();
-        printCardsHumanPlayer();
-        printCardsMachinePlayers();
-    }
+
 
     public void setNumPlayers(int numPlayers) {
         this.numPlayers = numPlayers;
@@ -157,22 +165,18 @@ public class GameController {
                 playerGridPane.add(imageView, col++, 0);
 
                 imageView.setOnMouseClicked(e -> {
-                    try {
                         if (mustDrawCard) {
                             System.out.println("Debes tomar una carta del mazo antes de jugar otra.");
-                            return;
                         }
+                        else {
 
-                        humanPlayer.getHand().remove(card);
-                        tableImageView.setImage(new Image(getClass().getResourceAsStream(card.getImagePath())));
+                            humanPlayer.removeCard(card);
+                            updateTableSumandView(card);
+                            printCardsHumanPlayer();
 
-                        mustDrawCard = true;
-
-                        printCardsHumanPlayer();
-
-                    } catch (Exception ex) {
-                        System.out.println("Error al jugar la carta: " + ex.getMessage());
-                    }
+                            mustDrawCard = true;
+                            new Thread(() -> playMachinesTurn()).start();
+                        }
                 });
 
             } catch (Exception e) {
@@ -209,4 +213,50 @@ public class GameController {
             }
         }
     }
+
+    public void updateTableSumandView(Card card){
+        Platform.runLater(() -> {
+        int currentSum = Integer.parseInt(tableSum.getText());
+        System.out.println("Suma antes de la jugada: " + currentSum);
+        int valueToSum = card.getGameValue( currentSum);
+        System.out.println("Valor a sumar: "+ valueToSum);
+        currentSum += valueToSum;
+        game.setTableSum(currentSum);
+        System.out.println("Valor despues de la jugada " + currentSum);
+        tableSum.setText(String.valueOf(currentSum));
+        System.out.println("nueva suma en la mesa " + currentSum);
+        tableImageView.setImage(new Image(getClass().getResourceAsStream(card.getImagePath())));
+
+        });
+    }
+
+    private void playFirstCard(){
+        deck = game.getDeck();
+        Random random = new Random();
+        Stack<Card> cards = deck.getCards();
+        Card randomCard = cards.pop();
+        updateTableSumandView(randomCard);
+    }
+
+    private void playMachinesTurn() {
+
+        for (Player player : game.getPlayers()) {
+
+            if (player instanceof MachinePlayer) {
+                String name = player.getName();
+
+                if (name.equals("máquina 1") && machine1GridPane != null) {
+                    game.playTurn(player);
+
+                } else if (name.equals("máquina 2") && machine2GridPane != null) {
+                    game.playTurn(player);
+
+                } else if (name.equals("máquina 3") && machine3GridPane != null) {
+                    game.playTurn(player);
+
+                }
+            }
+        }
+    }
+
 }

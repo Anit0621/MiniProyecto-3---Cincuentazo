@@ -13,13 +13,18 @@ public class MachinePlayer extends Player implements Runnable {
 
     private int tableSum;
     private Card playedCard;
+    private volatile boolean myTurn = false;
+    private volatile boolean running = true;
+    private Game game;
 
     /**
      * Creates a machine player with a given name
      * @param name the name of the machine player
      */
-    public MachinePlayer(String name) {
+    public MachinePlayer(String name, Game game) {
         super(name);
+
+        this.game = game;
     }
 
     /**
@@ -33,6 +38,7 @@ public class MachinePlayer extends Player implements Runnable {
     public Card playCard(int tableSum) throws NonPlayableCard {
         if (!canPlay(tableSum)) {
             throw new NonPlayableCard();
+
         }
 
         // Choose the first playable card (simple strategy)
@@ -55,23 +61,47 @@ public class MachinePlayer extends Player implements Runnable {
      */
     @Override
     public void run() {
-        try {
-            // Wait randomly between 2 and 4 seconds
-            int waitTime = (int) (2000 + Math.random() * 2000);
-            Thread.sleep(waitTime);
+            while(!Thread.currentThread().isInterrupted()) {
+                synchronized (this) {
+                    try{
 
-            // Try to play a card (simulation of machine's turn)
-            playedCard = playCard(tableSum);
+                        while(!myTurn) {
+                            wait();
+                        }
+                        int waitTime = (int) (2000 + Math.random() * 2000);
+                        Thread.sleep(waitTime);
 
-            System.out.println(name + " jugó la carta: " + playedCard);
 
-        } catch (NonPlayableCard e) {
-            System.out.println(name + ": No tiene ninguna carta para jugar.");
-            this.eliminated = true;
-        } catch (InterruptedException e) {
-            System.out.println(name + " fue interrumpido durante su turno.");
-        }
+
+                            playedCard = playCard(tableSum);
+                            System.out.println("Va a jugar la carta " + playedCard.getGameValue(tableSum));
+                            setMyTurn(false);
+                            System.out.println(name + " jugó la carta: " + playedCard);
+                            if (playedCard != null){
+                                game.updateTablesum(playedCard);
+
+
+
+                            }
+
+
+                    } catch(InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    } catch(NonPlayableCard e) {
+                        System.out.println(name + ": No tiene ninguna carta para jugar.");
+                        this.eliminated = true;
+
+                    }
+                    setMyTurn(false);
+                    synchronized (this) {
+                        notify();
+                    }
+                }
+
+            }
     }
+
+
 
     /**
      * Sets the current table sum before the thread starts.
@@ -88,4 +118,26 @@ public class MachinePlayer extends Player implements Runnable {
     public Card getPlayedCard() {
         return playedCard;
     }
+
+    public void setMyTurn(boolean myTurn) {
+        this.myTurn = myTurn;
+    }
+
+    public String getName(){
+        return name;
+    }
+
+    public void stopRunning() {
+        eliminated = true;
+        running = false;
+        synchronized (this) {
+            notifyAll();
+        }
+    }
+
+    public boolean isMyTurn() {
+        return myTurn;
+    }
+
 }
+
