@@ -31,22 +31,7 @@ public class HumanPlayer extends Player {
      * @throws NonPlayableCard if the player has no valid card to play
      */
     @Override
-    public Card playCard(int tableSum) throws NonPlayableCard {
-        if (!canPlay(tableSum)) {
-            throw new NonPlayableCard();
-        }
-
-        // In the actual game, the selected card will come from the GUI.
-        // For now, we just return the first playable card for simplicity.
-        for (Card c : hand) {
-            int value = c.getGameValue(tableSum);
-            if (tableSum + value <= 50) {
-                hand.remove(c);
-                return c;
-            }
-        }
-
-        // This line should never be reached if canPlay() works correctly
-        throw new NonPlayableCard();
+    public Card playCard(int tableSum){
+       throw new UnsupportedOperationException("El jugador  humano juega manualmente");
     }
 }

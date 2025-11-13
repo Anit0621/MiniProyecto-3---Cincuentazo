@@ -1,11 +1,11 @@
 package com.example._50zo.model;
 
 import com.example._50zo.model.exceptions.EmptyDeck;
-import com.example._50zo.model.exceptions.NonPlayableCard;
+
 import java.util.ArrayList;
 import java.util.List;
-import com.example._50zo.model.MachinePlayer;
-import com.example._50zo.model.HumanPlayer;
+
+import com.example._50zo.controller.GameController;
 /**
  * Represents the main game logic for Cincuentazo.
  *
@@ -23,6 +23,12 @@ public class Game {
     private int numPlayers;
     private MachinePlayer machinePlayer;
 
+    private GameController gameController;
+
+    public Deck getDeck() {
+        return deck;
+    }
+
     /**
      * Creates a new Cincuentazo game.
      */
@@ -32,6 +38,7 @@ public class Game {
         this.tableSum = 0;
         this.gameOver = false;
         this.numPlayers = numPlayers;
+        this.gameOver = false;
     }
 
     /**
@@ -46,14 +53,19 @@ public class Game {
         HumanPlayer humanPlayer = new HumanPlayer("Jugador humano");
         players.add(humanPlayer);
 
-         for(int i = 0 ; i < numPlayers; i++){
-            MachinePlayer machineplayerr = new MachinePlayer("máquina " + i);
-            Thread machineplayer = new Thread(machineplayerr);
-             System.out.println("Máquina " + i + "creada");
+         for(int i = 1 ; i < numPlayers; i++){
+            MachinePlayer machineplayerr = new MachinePlayer("máquina " + i,this);
              players.add(machineplayerr);
+            Thread machineplayer = new Thread(machineplayerr);
+             machineplayer.setDaemon(true);
+            machineplayer.start();
+
+             System.out.println("Máquina " + i + " creada e iniciada");
+
+
         }
 
-        // Deal 5 cards to each player
+
         for (int i = 0; i < 4; i++) {
             for (Player p : players) {
                 try {
@@ -73,53 +85,44 @@ public class Game {
      * @param player the player whose turn it is
      */
     public void playTurn(Player player) {
-        if (player.isEliminated()) {
-            System.out.println(player.getName() + " ya está eliminado.");
-            return;
-        }
 
-        try {
-            // Machine player runs in a separate thread
+
             if (player instanceof MachinePlayer) {
+                System.out.println("Valor actual de la mesa: " + getTableSum());
+
+                if (player.isEliminated()) {
+                    System.out.println(player.getName() + " ya está eliminado.");
+                    return;
+                }
+
+                if (!player.canPlay(tableSum)) {
+                    player.eliminate();
+                    ((MachinePlayer) player).stopRunning();
+                    numPlayers -= numPlayers;
+                    System.out.println(player.getName() + " no puede jugar más y ha sido eliminado.");
+
+
+
+                }
                 MachinePlayer machine = (MachinePlayer) player;
                 machine.setTableSum(tableSum);
-
-                Thread t = new Thread(machine);
-                t.start();
-                t.join(); // Wait for the machine to finish
-
-                Card played = machine.getPlayedCard();
-                if (played != null) {
-                    tableSum += played.getGameValue(tableSum);
-                    System.out.println("Nueva suma en la mesa: " + tableSum);
+                machine.setMyTurn(true);
+                synchronized (machine) {
+                    machine.notify();
                 }
-            }
-            // Human player plays directly
-            else if (player instanceof HumanPlayer) {
-                Card played = player.playCard(tableSum);
-                tableSum += played.getGameValue(tableSum);
-                System.out.println(player.getName() + " jugó " + played);
-                System.out.println("Nueva suma en la mesa: " + tableSum);
+
+                synchronized (machine) {
+                    try {
+                        while(machine.isMyTurn()){
+                            machine.wait();
+                        }
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                }
+
             }
 
-            // Check if the player reached exactly 50
-            if (tableSum == 50) {
-                System.out.println(player.getName() + " ha ganado la ronda 🎉");
-                gameOver = true;
-            }
-
-            // Check if player can’t play anymore
-            if (!player.canPlay(tableSum)) {
-                player.eliminate();
-                System.out.println(player.getName() + " no puede jugar más y ha sido eliminado.");
-            }
-
-        } catch (NonPlayableCard e) {
-            System.out.println(player.getName() + " no puede jugar una carta válida.");
-            player.eliminate();
-        } catch (InterruptedException e) {
-            System.out.println("El turno fue interrumpido.");
-        }
     }
 
     /**
@@ -147,5 +150,21 @@ public class Game {
      */
     public List<Player> getPlayers() {
         return players;
+    }
+
+    public void setTableSum(int tableSum) {
+        this.tableSum = tableSum;
+    }
+
+    public void updateTablesum(Card card){
+        if (gameController != null){
+            int value = card.getGameValue(tableSum);
+            tableSum += value;
+            gameController.updateTableSumandView(card);
+        }
+    }
+
+    public void setController(GameController gameController) {
+        this.gameController = gameController;
     }
 }

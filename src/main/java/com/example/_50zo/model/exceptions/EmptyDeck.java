@@ -11,10 +11,10 @@ public class EmptyDeck extends Exception {
 
     /**
      * Creates a new EmptyDeck exception with a custom message.
-     *
      * @param message specific message
      */
     public EmptyDeck(String message) {
         super(message);
     }
+
 }
