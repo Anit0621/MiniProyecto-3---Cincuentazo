@@ -29,23 +29,6 @@ public class Deck {
     }
 
     /**
-     * Creates a Deck initialized with the given list of cards.
-     * The first element of the list will end up at the bottom of the stack,
-     * and the last element will be on top.
-     *
-     * @param initialCards list of cards to add to the deck
-     */
-    public Deck(List<Card> initialCards) {
-        this();
-        if (initialCards != null) {
-            // push in list order so last list element will be top of stack
-            for (Card c : initialCards) {
-                cards.push(c);
-            }
-        }
-    }
-
-    /**
      * Shuffles the deck of cards.
      *
      * Implementation: convert the stack to a list, shuffle using Collections.
