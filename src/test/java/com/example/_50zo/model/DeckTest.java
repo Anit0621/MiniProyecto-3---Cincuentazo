@@ -13,5 +13,22 @@ class DeckTest {
             deck.drawCard();
         });
     }
+
+    @Test
+    void initializeStandard52DeckShouldHave52Cards() {
+        var deck = new Deck();
+        deck.initializeStandard52Deck();
+        assertEquals(52, deck.size());
+    }
+
+    @Test
+    void drawCardShouldDecreaseDeckSizeByOne() throws Exception {
+        var deck = new Deck();
+        deck.initializeStandard52Deck();
+        var initialSize = deck.size();
+        deck.drawCard();
+        assertEquals(initialSize - 1, deck.size());
+    }
+
   
 }
