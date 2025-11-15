@@ -3,7 +3,18 @@ package com.example._50zo.model;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit tests for the {@link Card} class, specifically for verifying
+ * the correctness of the {@code getGameValue(int)} method according
+ * to the game's scoring rules.
+ */
+
 class CardTest {
+
+    /**
+     * Verifies that a card with the rank "9" always returns a game value of 0,
+     * regardless of the current table sum.
+     */
 
     @Test
     void nineShouldBeZero() {
@@ -11,6 +22,12 @@ class CardTest {
         var result = card.getGameValue(25);
         assertEquals(0, result);
     }
+
+
+    /**
+     * Ensures that all face cards (J, Q, K) return a game value of -10.
+     * This test validates the fixed penalty value assigned to face cards.
+     */
 
     @Test
     void faceCardsShouldBeMinus10() {
@@ -22,6 +39,11 @@ class CardTest {
         assertEquals(-10, queen.getGameValue(30));
         assertEquals(-10, king.getGameValue(30));
     }
+
+    /**
+     * Checks that numbered cards (2–10) return their numeric value unchanged.
+     * This test ensures the basic scoring rule for regular number cards.
+     */
 
     @Test
     void numberCardsShouldReturnTheirValue() {

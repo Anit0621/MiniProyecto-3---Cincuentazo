@@ -30,34 +30,44 @@ public class    Card {
         this.imagePath = imagePath;
     }
 
+    /**
+     * Returns the name of the card. This typically corresponds to the card's
+     * rank or identifier (e.g., "A", "K", "7").
+     *
+     * @return the card name.
+     */
 
     public String getName() {
         return name;
     }
 
-    public String getSuit() {
-        return suit;
-    }
-
-    public int getValue() {
-        return value;
-    }
+    /**
+     * Returns the file path of the image representing this card.
+     *
+     * @return the card image path.
+     */
 
     public String getImagePath() {
         return imagePath;
     }
 
+
+    /**
+     * Sets the name of the card.
+     *
+     * @param name the new card name.
+     */
+
     public void setName(String name) {
         this.name = name;
     }
 
-    public void setSuit(String suit) {
-        this.suit = suit;
-    }
 
-    public void setValue(int value) {
-        this.value = value;
-    }
+    /**
+     * Sets the file path of the card's image.
+     *
+     * @param imagePath the new image path.
+     */
 
     public void setImagePath(String imagePath) {
         this.imagePath = imagePath;

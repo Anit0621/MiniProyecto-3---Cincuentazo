@@ -36,13 +36,13 @@ public class Deck {
      */
     public void shuffle() {
         List<Card> list = new ArrayList<>();
-        // pop all to temporary list
+
         while (!cards.isEmpty()) {
             list.add(cards.pop());
         }
-        // shuffle the list
+
         Collections.shuffle(list);
-        // push back to stack so last element in list is on top of stack
+
         for (Card c : list) {
             cards.push(c);
         }
@@ -75,34 +75,23 @@ public class Deck {
             return;
         }
 
-        // Move current stack to list in bottom-to-top order
+
         List<Card> combined = new ArrayList<>();
 
-        // Current stack, bottom ... top (we need to reconstruct in same order)
+
         for (Card c : cards) {
             combined.add(c);
         }
 
-        // Add new cards at the end (they will be on top after rebuild)
+
         for (Card c : newCards) {
             combined.add(c);
         }
 
-        // Rebuild stack,first element of combined will be bottom, last will be top
+
         cards.clear();
         for (Card c : combined) {
             cards.push(c);
-        }
-    }
-
-    /**
-     * Adds a single card on top of the deck.
-     *
-     * @param card the card to push on top
-     */
-    public void addCardOnTop(Card card) {
-        if (card != null) {
-            cards.push(card);
         }
     }
 
@@ -138,15 +127,15 @@ public class Deck {
             for (int i = 0; i < ranks.length; i++) {
                 String rank = ranks[i];
                 int value;
-                // Basic value mapping, for numbers use numeric value, for face and A use simple base
+
                 if ("A".equals(rank)) {
-                    value = 1; // game logic will handle A as 1 or 10
+                    value = 1;
                 } else if ("J".equals(rank) || "Q".equals(rank) || "K".equals(rank)) {
-                    value = -10; // we store base but game uses card rules
+                    value = -10;
                 } else if ("9".equals(rank)) {
                     value = 0;
                 } else {
-                    // parse numbers and 10
+
                     try {
                         value = Integer.parseInt(rank);
                     } catch (NumberFormatException e) {
@@ -155,13 +144,18 @@ public class Deck {
                 }
 
                 String folder = suit.toLowerCase();
-                // imagePath left empty and GUI can set actual images later
                 Card card = new Card(rank, suit, value, "");
                 card.setImagePath("/Cartas/" + folder + "/" + rank + ".png");
                 cards.push(card);
             }
         }
     }
+
+
+    /**
+     * Returns the {@code Stack} object that contains the cards in the deck.
+     *
+     */
 
     public Stack<Card> getCards() {
         return cards;

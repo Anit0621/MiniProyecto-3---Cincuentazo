@@ -22,8 +22,18 @@ public class EndController {
     private Label labelFinalVictory;
 
     @FXML
-
     private Label labelFinalDefeat;
+
+    /**
+     * Initializes the GameController when the corresponding view is loaded.
+     * <p>
+     * This method is automatically executed during the controller initialization.
+     * Its purpose is to ensure that no previous instance of {@code GameStage} exists,
+     * preventing any leftover data, state, or resources from a previous game session.
+     * </p>
+     *
+     * @throws IOException if an error occurs during initialization or resource loading.
+     */
 
 
 

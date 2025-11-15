@@ -12,6 +12,19 @@ import com.example._50zo.model.Game;
 import java.io.IOException;
 import java.util.Optional;
 
+
+/**
+ * Controller responsible for managing the start screen of the game.
+ * <p>
+ * This controller handles player name input, initializes a new game instance,
+ * and displays informational dialogs such as game rules. It serves as the
+ * entry point before transitioning to the main game interface.
+ * </p>
+ *
+ * @see Game
+ * @see GameStage
+ */
+
 public class StartController {
 
     @FXML
@@ -23,14 +36,34 @@ public class StartController {
     @FXML
     private TextField nameField;
 
+    /**
+     * The number of players participating in the game.
+     * This value is set externally before starting the game.
+     */
+
     public int numPlayers;
+
+    /**
+     * Reference to the game instance that will be initialized
+     * once the user starts the game.
+     */
 
     public Game game;
 
-    public int getNumPlayers() {
-        return numPlayers;
-    }
-    public void setNumPlayers(int numPlayers) {}
+    /**
+     * Starts the game when the user presses the Start button.
+     * <p>
+     * If the player name field is empty, a warning dialog is shown.
+     * Otherwise, a new {@code Game} instance is created with the
+     * selected number of players, the human player's name is set,
+     * and the main game stage is displayed.
+     * </p>
+     *
+     * @param event the action event triggered by the Start button.
+     * @throws IOException if the game stage fails to load.
+     * @see GameStage
+     * @see Game
+     */
 
     @FXML
     void startGame(ActionEvent event) throws IOException {
@@ -55,6 +88,13 @@ public class StartController {
             gameStage.show();
         }
     }
+
+    /**
+     * Displays an informational dialog containing the complete
+     * rules of the game when the Help button is pressed.
+     *
+     * @param event the action event triggered by the Help button.
+     */
 
     @FXML
     void HelpBtnPressed(ActionEvent event) {

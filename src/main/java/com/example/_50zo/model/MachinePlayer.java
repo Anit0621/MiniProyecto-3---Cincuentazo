@@ -41,7 +41,7 @@ public class MachinePlayer extends Player implements Runnable {
 
         }
 
-        // Choose the first playable card (simple strategy)
+
         for (Card c : hand) {
             int value = c.getGameValue(tableSum);
             if (tableSum + value <= 20) {
@@ -119,13 +119,27 @@ public class MachinePlayer extends Player implements Runnable {
         return playedCard;
     }
 
+    /**
+     * Changes the {@code myTurn} boolean value to the value received by this method.
+     * @param myTurn the boolean value to be set.
+     */
+
     public void setMyTurn(boolean myTurn) {
         this.myTurn = myTurn;
     }
 
+    /**
+     * Returns the name set for this machinePlayer.
+     */
+
     public String getName(){
         return name;
     }
+
+    /**
+     * Changes the {@code eliminated} to true and {@code running} to false, indicating that the Thread using
+     * this runnable MachinePlayer must stop.
+     */
 
     public void stopRunning() {
         eliminated = true;
@@ -134,6 +148,10 @@ public class MachinePlayer extends Player implements Runnable {
             notifyAll();
         }
     }
+
+    /**
+     * Returns whether it currently is the machine's turn to play.
+     */
 
     public boolean isMyTurn() {
         return myTurn;

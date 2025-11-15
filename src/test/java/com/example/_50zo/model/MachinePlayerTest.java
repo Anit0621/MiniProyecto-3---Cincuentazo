@@ -4,8 +4,18 @@ import com.example._50zo.model.exceptions.NonPlayableCard;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+/**
+ * Unit tests for the {@link MachinePlayer} class, focusing on validating
+ * its decision-making logic when selecting and playing cards.
+ */
+
 
 class MachinePlayerTest {
+
+    /**
+     * Ensures that the machine player throws a {@link NonPlayableCard} exception
+     * when attempting to play a card that would exceed the allowed table sum limit.
+     */
 
     @Test
     void PlayingInvalidCardShouldThrowNonPlayableCard (){
@@ -19,6 +29,13 @@ class MachinePlayerTest {
 
     }
 
+    /**
+     * Verifies that the machine player correctly selects and plays a valid card
+     * when one is available in its hand.
+     *
+     * @throws Exception if an unexpected error occurs during card selection.
+     */
+
     @Test
     void MachineShouldPlayAValidCard() throws Exception {
         var machine = new MachinePlayer("Maquina Test", null);
@@ -26,6 +43,13 @@ class MachinePlayerTest {
         var played = machine.playCard(0);
         assertEquals("5", played.getName());
     }
+
+    /**
+     * Confirms that after the machine player plays a card, that card
+     * is properly removed from its hand.
+     *
+     * @throws Exception if an unexpected error occurs during card playing.
+     */
 
     @Test
     void MachineShouldRemovePlayedCardFromHand() throws Exception {

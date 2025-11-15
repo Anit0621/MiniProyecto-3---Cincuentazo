@@ -24,6 +24,10 @@ public class Game {
     private GameController gameController;
 
 
+    /**
+     * Returns the {@code Deck} object set for this game.
+     */
+
     public Deck getDeck() {
         return deck;
     }
@@ -77,6 +81,23 @@ public class Game {
         }
     }
 
+    /**
+     * Executes the turn for the specified player.
+     * <p>
+     * If the game is over, the player is {@code null}, or the player has already
+     * been eliminated, the method immediately returns. Otherwise, the method
+     * processes the player's turn based on whether they are a human or a
+     * {@code MachinePlayer}.
+
+     *
+     * @param player the player whose turn is being executed.
+     * @throws InterruptedException if the machine player's thread is interrupted
+     *         during the {@code wait()} operation (wrapped internally).
+     * @see MachinePlayer
+     * @see #eliminatePlayer(Player)
+     * @see #checkForWinner()
+     */
+
 
     public void playTurn(Player player) {
         if (gameOver || player == null || player.isEliminated()) return;
@@ -118,6 +139,27 @@ public class Game {
         checkForWinner();
     }
 
+    /**
+     * Eliminates the specified player from the game.
+     * <p>
+     * If the player is {@code null}, already eliminated, or the game is already
+     * over, the method does nothing. Otherwise, the player's remaining cards are
+     * returned to the deck, the player's state is updated to eliminated, and
+     * machine players are instructed to stop their background execution thread.
+     * </p>
+     *
+     * <p>
+     * The number of active players is decreased by one, and if a
+     * {@code GameController} instance is present, a message is displayed in the UI
+     * notifying that the player has been removed. Finally, the game state is checked
+     * to determine whether a winner has emerged.
+     * </p>
+     *
+     * @param p the player to eliminate from the game.
+     * @see MachinePlayer#stopRunning()
+     * @see #checkForWinner()
+     */
+
 
     public void eliminatePlayer(Player p) {
         if (p == null || p.isEliminated() || gameOver) return;
@@ -144,10 +186,45 @@ public class Game {
         checkForWinner();
     }
 
+    /**
+     * Removes eliminated players from the game, updating the count of active players.
+     * <p>
+     * This method iterates through the list of players and recalculates the number of
+     * players who are still active (i.e., not eliminated). It does not modify the
+     * player list itself, only updates the internal counter {@code numPlayers}.
+     * </p>
+     *
+     * <p><b>Note:</b> As currently implemented, this method does not perform the intended
+     * recalculation and should be revised. It simply resets the local variable
+     * {@code currentNumPlayers} but does not affect the game's state.</p>
+     */
+
     public void removeEliminatedPlayers() {
         var currentNumPlayers = numPlayers;
         currentNumPlayers -= currentNumPlayers;
     }
+
+    /**
+     * Checks the current state of the game to determine whether a winner exists.
+     * <p>
+     * This method evaluates all players and counts how many remain active
+     * (i.e., not eliminated). There are three possible outcomes:
+     * </p>
+     *
+     * <ul>
+     *   <li><b>One player remaining:</b> That player is declared the winner and the game ends.</li>
+     *   <li><b>No players remaining:</b> The game ends with no winner.</li>
+     *   <li><b>More than one active player:</b> The game continues.</li>
+     * </ul>
+     *
+     * <p>
+     * If a winner is detected, the method interacts with the {@link GameController}
+     * to show a message and trigger the end-of-game screen.
+     * </p>
+     *
+     * @throws RuntimeException if an unexpected error occurs while notifying the controller
+     * (typically wrapping an internal IOException).
+     */
 
 
     public void checkForWinner() {
@@ -215,6 +292,11 @@ public class Game {
         return players;
     }
 
+    /**
+     * Updates the tableSum
+     * @param tableSum the int value to set for the TableSum.
+     */
+
     public void setTableSum(int tableSum) {
         this.tableSum = tableSum;
     }
@@ -238,6 +320,11 @@ public class Game {
             players.get(0).name = playerName;
         }
     }
+
+    /**
+     * Sets the GameController for this Game instance.
+     * @param gameController the GameController instance to be set.
+     */
 
     public void setController(GameController gameController) {
         this.gameController = gameController;

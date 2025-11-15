@@ -10,9 +10,36 @@ import javafx.stage.Stage;
 import java.io.IOError;
 import java.io.IOException;
 
+
+/**
+ * Represents the initial stage of the application where the user is welcomed
+ * and prompted to enter their information before starting the game.
+ * <p>
+ * This class is responsible for loading the {@code StartView.fxml} layout,
+ * initializing its associated controller, configuring the window properties,
+ * and displaying the start screen. It acts as the entry point of the UI workflow
+ * before transitioning to the actual game stage.
+ * </p>
+ */
+
 public class StartStage extends Stage {
 
+
+    /**
+     * The controller associated with the start view.
+     * */
     private final StartController startController;
+
+    /**
+     * Creates a new instance of {@code StartStage}.
+     * <p>
+     * This constructor loads the FXML file for the start view, retrieves its
+     * controller, sets the scene, configures window properties such as the title
+     * and application icon, and displays the stage.
+     * </p>
+     *
+     * @throws IOException if the FXML file or any associated resource fails to load.
+     */
 
     public StartStage() throws IOException{
 
@@ -28,6 +55,13 @@ public class StartStage extends Stage {
         setResizable(false);
         show();
     }
+
+    /**
+     * Returns the controller associated with this start stage.
+     *
+     * @return the {@link StartController} instance.
+     */
+
 
     public StartController getController(){
         return startController;
